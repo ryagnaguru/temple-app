@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button, Form } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import FirebaseAuthService from "../service/firebaseService";
+import FirebaseAuthService from "../service/firebaseAuthService";
 import { useNavigate } from "react-router-dom";
 
 

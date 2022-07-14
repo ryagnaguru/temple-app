@@ -9,7 +9,7 @@ import Home from "./components/home";
 import NewRegistration from "./components/newRegistration";
 import SignIn from "./components/signin";
 import NavigationBar from "./Navbar";
-import FirebaseAuthService from "./service/firebaseService";
+import FirebaseAuthService from "./service/firebaseAuthService";
 
 
 function App() {

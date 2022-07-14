@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { Button, Form } from "react-bootstrap";
-import isEmail from "validator/lib/isEmail";
-import { isValidPassword, isValidPhoneNumber } from "../utilities/validator";
-
+import FirebaseAuthService from "../service/firebaseAuthService";
+import UserManagementService from "../service/userService";
+import { isValidPassword, isValidPhoneNumber, isValidEmail } from "../utilities/validator";
+import { useNavigate } from "react-router-dom";
 
 const allProperties = {
     phoneNumber: false,
@@ -11,7 +12,7 @@ const allProperties = {
 }
 
 function NewRegistration() {
-    
+    const nav = useNavigate();
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
     const [phoneNumber, setPhoneNumber] = useState("");
@@ -54,7 +55,7 @@ function NewRegistration() {
         }
         if (event.target.id === "formBasicEmail") {
             const email = event.target.value;
-            if (!isEmail(email)) {
+            if (!isValidEmail(email)) {
                 triggerError(" Email address ");
                 allProperties.email = false;
             } else {
@@ -85,6 +86,8 @@ function NewRegistration() {
 
     function saveUserDetails(e){
         e.preventDefault();
+        // setDisableButton(true);
+
         const userObj = {
             firstName,
             lastName,
@@ -93,8 +96,16 @@ function NewRegistration() {
             phoneNumber,
             password
         }
-        console.log( " --- ", userObj);
-        setDisableButton(true);
+        FirebaseAuthService.createUser(email, password).then( async (userCredential) => {
+            if(userCredential){
+                delete userObj.password;
+                await UserManagementService.addProfileForUser({...userObj, uid:userCredential.user.uid});
+                nav("/");
+            }
+        }).catch((err) => {
+            console.log(" err - ", err);
+        })
+        
     }
 
   return (
