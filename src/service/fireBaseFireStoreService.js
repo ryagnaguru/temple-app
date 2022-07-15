@@ -1,5 +1,5 @@
 import fireBaseApp from "../config/fireBaseConfig";
-import { collection, addDoc, getFirestore } from "firebase/firestore"; 
+import { collection, addDoc, getFirestore, getDocs, query, where } from "firebase/firestore"; 
 
 
 const db = getFirestore(fireBaseApp());
@@ -13,8 +13,37 @@ const addUserData = async (userObj) => {
     }
 }
 
+const getAllUserData = async () => {
+    try {
+        const querySnapshot = await getDocs(collection(db, "users"));
+        querySnapshot.forEach((doc) => {
+            console.log(`${doc.id} => ${doc.data()}`);
+        });
+    } catch (err) {
+        console.log("getAllUserData - ", err)
+    }
+}
+
+const getUserData = async (uid) => {
+    try {
+        const userQuery = query(collection(db, "users"), where("uid", "==", uid));
+        const querySnapshot = await getDocs(userQuery);
+        const userContribution = [];
+        querySnapshot.forEach((doc) => {
+            if( doc.data().contribution){
+                userContribution.push(doc.data().contribution);
+            }
+        });
+        return userContribution;
+    } catch (err) {
+        console.log("getUserData - ", err)
+    }
+}
+
 const FireBaseFireStoreService = {
-    addUserData
+    addUserData,
+    getAllUserData,
+    getUserData
 }
 
 export default FireBaseFireStoreService;

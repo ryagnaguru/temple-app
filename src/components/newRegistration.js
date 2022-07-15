@@ -4,6 +4,7 @@ import FirebaseAuthService from "../service/firebaseAuthService";
 import UserManagementService from "../service/userService";
 import { isValidPassword, isValidPhoneNumber, isValidEmail } from "../utilities/validator";
 import { useNavigate } from "react-router-dom";
+import Load from "../utilities/spinner";
 
 const allProperties = {
     phoneNumber: false,
@@ -23,6 +24,7 @@ function NewRegistration() {
     const [err, setErr] = useState(false);
     const [errField, setErrField] = useState("");
     const [disableButton, setDisableButton] = useState(true);
+    const [loading, setLoading] = useState(false);
 
     function resetError(callBack, value) {
         setErr(false);
@@ -86,7 +88,8 @@ function NewRegistration() {
 
     function saveUserDetails(e){
         e.preventDefault();
-        // setDisableButton(true);
+        setLoading(true);
+        setDisableButton(true);
 
         const userObj = {
             firstName,
@@ -99,7 +102,18 @@ function NewRegistration() {
         FirebaseAuthService.createUser(email, password).then( async (userCredential) => {
             if(userCredential){
                 delete userObj.password;
+                userObj.contribution = [
+                    {
+                        contributedDate: "2022-01-01",
+                        amount: 2000
+                    },{
+                        contributedDate: "2022-01-02",
+                        amount: 5000
+                    },
+                ];
                 await UserManagementService.addProfileForUser({...userObj, uid:userCredential.user.uid});
+                setLoading(false);
+                setDisableButton(false);
                 nav("/");
             }
         }).catch((err) => {
@@ -113,6 +127,7 @@ function NewRegistration() {
         <h3> New Registration. </h3>
         <br/>
         { err && <span color="red"> Please provide valid detail for {errField}</span> }
+        {loading && <Load></Load>}
         <Form.Group className="mb-3" controlId="formBasicFirstName">
             <Form.Label>First Name</Form.Label>
             <Form.Control type="text" required={true} placeholder="Enter First Name" onChange={setProperties}/>

@@ -1,5 +1,5 @@
 import { Container, Nav, Navbar, NavDropdown } from 'react-bootstrap';
-import FirebaseAuthService from './service/firebaseAuthService';
+import FirebaseAuthService from '../service/firebaseAuthService';
 
 function NavigationBar({existingUser}) {
   const style = {
@@ -21,6 +21,7 @@ function NavigationBar({existingUser}) {
               existingUser ?  (
               <NavDropdown title={existingUser.email} id="basic-nav-dropdown">
                 <NavDropdown.Item onClick={signOut}>Sign out</NavDropdown.Item>
+                <NavDropdown.Item href="/contribution">Contribution</NavDropdown.Item>
               </NavDropdown>) : 
             (<Nav.Link href="/signIn">Sign In</Nav.Link>)
             }
